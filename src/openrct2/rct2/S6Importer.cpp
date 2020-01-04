@@ -790,6 +790,7 @@ public:
         dst.num_brakes = src.num_brakes;
         dst.num_reversers = src.num_reversers;
         dst.station_flags = src.station_flags;
+        ride_ratings_cycle_detection_data_init();
     }
 
     void ImportRideMeasurements()
