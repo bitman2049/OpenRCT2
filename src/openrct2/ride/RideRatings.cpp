@@ -584,7 +584,8 @@ static void ride_ratings_score_close_proximity_loops_helper(TileElement* inputTi
 
         switch (tileElement->GetType())
         {
-            case TILE_ELEMENT_TYPE_PATH: {
+            case TILE_ELEMENT_TYPE_PATH: 
+            {
                 int32_t zDiff = (int32_t)tileElement->base_height - (int32_t)inputTileElement->base_height;
                 if (zDiff >= 0 && zDiff <= 16)
                 {
@@ -593,7 +594,8 @@ static void ride_ratings_score_close_proximity_loops_helper(TileElement* inputTi
             }
             break;
 
-            case TILE_ELEMENT_TYPE_TRACK: {
+            case TILE_ELEMENT_TYPE_TRACK: 
+            {
                 bool elementsAreAt90DegAngle = ((tileElement->GetDirection() ^ inputTileElement->GetDirection()) & 1) != 0;
                 if (elementsAreAt90DegAngle)
                 {
