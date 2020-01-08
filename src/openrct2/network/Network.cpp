@@ -19,6 +19,7 @@
 #include "../actions/PeepPickupAction.hpp"
 #include "../core/Guard.hpp"
 #include "../platform/platform.h"
+#include "../ride/RideRatings.h"
 #include "../ui/UiContext.h"
 #include "../ui/WindowManager.h"
 #include "../util/SawyerCoding.h"
@@ -2138,6 +2139,7 @@ NetworkPlayer* Network::AddPlayer(const std::string& name, const std::string& ke
             player->SetName(String::Trim(std::string(name)));
         }
 
+        ride_ratings_cycle_detection_data_init();
         addedplayer = player.get();
         player_list.push_back(std::move(player));
     }
