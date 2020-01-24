@@ -19,6 +19,7 @@
 #include <openrct2/Input.h>
 #include <openrct2/OpenRCT2.h>
 #include <openrct2/actions/LoadOrQuitAction.hpp>
+#include <openrct2/actions/PauseToggleAction.hpp>
 #include <openrct2/audio/audio.h>
 #include <openrct2/config/Config.h>
 #include <openrct2/interface/Chat.h>
@@ -112,11 +113,10 @@ static void shortcut_pause_game()
 {
     if (!(gScreenFlags & (SCREEN_FLAGS_TITLE_DEMO | SCREEN_FLAGS_SCENARIO_EDITOR | SCREEN_FLAGS_TRACK_MANAGER)))
     {
-        rct_window* window = window_find_by_class(WC_TOP_TOOLBAR);
-        if (window != nullptr)
+        if (network_get_mode() != NETWORK_MODE_CLIENT)
         {
-            window->Invalidate();
-            window_event_mouse_up_call(window, WC_TOP_TOOLBAR__WIDX_PAUSE);
+            auto pauseToggleAction = PauseToggleAction();
+            GameActions::Execute(&pauseToggleAction);
         }
     }
 }

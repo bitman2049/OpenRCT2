@@ -479,7 +479,6 @@ enum
     static_assert(widx == wc##__##widx, "Global WIDX of " #widx " doesn't match actual value.")
 
 #define WC_MAIN_WINDOW__0 0
-#define WC_TOP_TOOLBAR__WIDX_PAUSE 0
 #define WC_TOP_TOOLBAR__WIDX_LAND 8
 #define WC_TOP_TOOLBAR__WIDX_WATER 9
 #define WC_TOP_TOOLBAR__WIDX_SCENERY 10
