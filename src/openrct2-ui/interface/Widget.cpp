@@ -812,6 +812,11 @@ bool widget_is_disabled(rct_window* w, rct_widgetindex widgetIndex)
     return (w->disabled_widgets & (1LL << widgetIndex)) != 0;
 }
 
+bool widget_is_usable(rct_window* w, rct_widgetindex widgetIndex)
+{
+    return (!widget_is_disabled(w, widgetIndex) && w->widgets[widgetIndex].type != WWT_EMPTY);
+}
+
 bool widget_is_pressed(rct_window* w, rct_widgetindex widgetIndex)
 {
     if (w->pressed_widgets & (1LL << widgetIndex))

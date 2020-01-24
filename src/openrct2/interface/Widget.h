@@ -63,6 +63,7 @@ void widget_draw(rct_drawpixelinfo* dpi, rct_window* w, rct_widgetindex widgetIn
 
 bool widget_is_enabled(rct_window* w, rct_widgetindex widgetIndex);
 bool widget_is_disabled(rct_window* w, rct_widgetindex widgetIndex);
+bool widget_is_usable(rct_window* w, rct_widgetindex widgetIndex);
 bool widget_is_pressed(rct_window* w, rct_widgetindex widgetIndex);
 bool widget_is_highlighted(rct_window* w, rct_widgetindex widgetIndex);
 bool widget_is_active_tool(rct_window* w, rct_widgetindex widgetIndex);
