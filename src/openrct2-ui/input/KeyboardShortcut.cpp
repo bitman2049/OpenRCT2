@@ -922,39 +922,39 @@ static void shortcut_increase_element_height()
     rct_window* w = window_find_by_class(WC_TILE_INSPECTOR);
     if (w != nullptr)
     {
-        int action = -1;
+        int widgetid = -1;
         switch (w->page)
         {
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_SURFACE:
-                action = WC_TILE_INSPECTOR__WIDX_SURFACE_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_SURFACE_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_PATH:
-                action = WC_TILE_INSPECTOR__WIDX_PATH_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_PATH_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_TRACK:
-                action = WC_TILE_INSPECTOR__WIDX_TRACK_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_TRACK_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_SCENERY:
-                action = WC_TILE_INSPECTOR__WIDX_SCENERY_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_SCENERY_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_ENTRANCE:
-                action = WC_TILE_INSPECTOR__WIDX_ENTRANCE_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_ENTRANCE_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_WALL:
-                action = WC_TILE_INSPECTOR__WIDX_WALL_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_WALL_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_LARGE_SCENERY:
-                action = WC_TILE_INSPECTOR__WIDX_LARGE_SCENERY_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_LARGE_SCENERY_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_BANNER:
-                action = WC_TILE_INSPECTOR__WIDX_BANNER_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_BANNER_SPINNER_HEIGHT_INCREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_CORRUPT:
-                action = WC_TILE_INSPECTOR__WIDX_CORRUPT_SPINNER_HEIGHT_INCREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_CORRUPT_SPINNER_HEIGHT_INCREASE;
                 break;
         }
-        if (action != -1 && widget_is_usable(w, action))
-            window_event_mouse_down_call(w, action);
+        if (widgetid != -1 && widget_is_usable(w, widgetid))
+            window_event_mouse_down_call(w, widgetid);
         return;
     }
 }
@@ -964,39 +964,39 @@ static void shortcut_decrease_element_height()
     rct_window* w = window_find_by_class(WC_TILE_INSPECTOR);
     if (w != nullptr)
     {
-        int action = -1;
+        int widgetid = -1;
         switch (w->page)
         {
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_SURFACE:
-                action = WC_TILE_INSPECTOR__WIDX_SURFACE_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_SURFACE_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_PATH:
-                action = WC_TILE_INSPECTOR__WIDX_PATH_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_PATH_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_TRACK:
-                action = WC_TILE_INSPECTOR__WIDX_TRACK_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_TRACK_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_SCENERY:
-                action = WC_TILE_INSPECTOR__WIDX_SCENERY_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_SCENERY_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_ENTRANCE:
-                action = WC_TILE_INSPECTOR__WIDX_ENTRANCE_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_ENTRANCE_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_WALL:
-                action = WC_TILE_INSPECTOR__WIDX_WALL_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_WALL_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_LARGE_SCENERY:
-                action = WC_TILE_INSPECTOR__WIDX_LARGE_SCENERY_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_LARGE_SCENERY_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_BANNER:
-                action = WC_TILE_INSPECTOR__WIDX_BANNER_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_BANNER_SPINNER_HEIGHT_DECREASE;
                 break;
             case WC_TILE_INSPECTOR__TILE_INSPECTOR_PAGE_CORRUPT:
-                action = WC_TILE_INSPECTOR__WIDX_CORRUPT_SPINNER_HEIGHT_DECREASE;
+                widgetid = WC_TILE_INSPECTOR__WIDX_CORRUPT_SPINNER_HEIGHT_DECREASE;
                 break;
         }
-        if (action != -1 && widget_is_usable(w, action))
-            window_event_mouse_down_call(w, action);
+        if (widgetid != -1 && widget_is_usable(w, widgetid))
+            window_event_mouse_down_call(w, widgetid);
         return;
     }
 }
