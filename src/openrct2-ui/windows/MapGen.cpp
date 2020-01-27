@@ -1186,7 +1186,7 @@ static void window_mapgen_heightmap_generate_map()
     mapgenSettings.normalize_height = _heightmapNormalize;
     mapgenSettings.simplex_low = _heightmapLow;
     mapgenSettings.simplex_high = _heightmapHigh;
-    mapgen_generate_from_heightmap(&mapgenSettings);
+    mapgen_generate_from_heightmap_2(&mapgenSettings);
     gfx_invalidate_screen();
 }
 

@@ -993,14 +993,17 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
         {
             // The x and y axis are flipped in the world, so this uses y for x and x for y.
             auto* const surfaceElement = map_get_surface_element_at(
-                TileCoordsXY{ static_cast<int32_t>(y + 1), static_cast<int32_t>(x + 1) }.ToCoordsXY());
+                TileCoordsXY{ static_cast<int32_t>((y + 1)/2), static_cast<int32_t>((x + 1))/2 }.ToCoordsXY());
             if (surfaceElement == nullptr)
                 continue;
 
             // Read value from bitmap, and convert its range
             uint8_t value = dest[x + y * _heightMapData.width];
             value = (uint8_t)((float)(value - minValue) / rangeIn * rangeOut) + settings->simplex_low;
-            surfaceElement->base_height = value;
+            if ((x % 2 == 0) && (y % 2 == 0))
+                surfaceElement->base_height = value;
+            else
+                surfaceElement->base_height = std::min(surfaceElement->base_height, value);
 
             // Floor to even number
             surfaceElement->base_height /= 2;
@@ -1012,26 +1015,6 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
             {
                 surfaceElement->SetWaterHeight(settings->water_level * COORDS_Z_STEP);
             }
-        }
-    }
-
-    // Smooth map
-    if (settings->smooth)
-    {
-        // Keep smoothing the entire map until no tiles are changed anymore
-        while (true)
-        {
-            uint32_t numTilesChanged = 0;
-            for (uint32_t y = 1; y <= _heightMapData.height; y++)
-            {
-                for (uint32_t x = 1; x <= _heightMapData.width; x++)
-                {
-                    numTilesChanged += tile_smooth(x, y);
-                }
-            }
-
-            if (numTilesChanged == 0)
-                break;
         }
     }
 
