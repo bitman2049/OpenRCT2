@@ -77,6 +77,10 @@ static constexpr const char* SnowTrees[] = {
     "TRFS    ", // Snow-covered Red Fir Tree
 };
 
+static constexpr const char* QuarterTile[] = {
+    "PIPE8   ", // Quarter tile 1-tall pipe section
+};
+
 #pragma endregion
 
 // Randomly chosen base terrains. We rarely want a whole map made out of chequerboard or rock.
@@ -710,6 +714,71 @@ bool mapgen_load_heightmap(const utf8* path)
     }
 }
 
+bool mapgen_load_heightmap_2(const utf8* path)
+{
+    auto format = Imaging::GetImageFormatFromPath(path);
+    if (format == IMAGE_FORMAT::PNG)
+    {
+        // Promote to 32-bit
+        format = IMAGE_FORMAT::PNG_32;
+    }
+
+    try
+    {
+        auto image = Imaging::ReadFromFile(path, format);
+        if (image.Width != image.Height)
+        {
+            context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_WIDTH_AND_HEIGHT_DO_NOT_MATCH);
+            return false;
+        }
+
+        auto size = image.Width;
+        if (image.Width > MAXIMUM_MAP_SIZE_PRACTICAL * 2)
+        {
+            context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_HEIHGT_MAP_TOO_BIG);
+            size = std::min<uint32_t>(image.Height, MAXIMUM_MAP_SIZE_PRACTICAL * 2);
+        }
+
+        // Allocate memory for the height map values, one byte pixel
+        delete[] _heightMapData.mono_bitmap;
+        _heightMapData.mono_bitmap = new uint8_t[size * size];
+        _heightMapData.width = size;
+        _heightMapData.height = size;
+
+        // Copy average RGB value to mono bitmap
+        constexpr auto numChannels = 4;
+        const auto pitch = image.Stride;
+        const auto pixels = image.Pixels.data();
+        for (uint32_t x = 0; x < _heightMapData.width; x++)
+        {
+            for (uint32_t y = 0; y < _heightMapData.height; y++)
+            {
+                const auto red = pixels[x * numChannels + y * pitch];
+                const auto green = pixels[x * numChannels + y * pitch + 1];
+                const auto blue = pixels[x * numChannels + y * pitch + 2];
+                _heightMapData.mono_bitmap[x + y * _heightMapData.width] = (red + green + blue) / 3;
+            }
+        }
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        switch (format)
+        {
+        case IMAGE_FORMAT::BITMAP:
+            context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_READING_BITMAP);
+            break;
+        case IMAGE_FORMAT::PNG_32:
+            context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_READING_PNG);
+            break;
+        default:
+            log_error("Unable to load height map image: %s", e.what());
+            break;
+        }
+        return false;
+    }
+}
+
 /**
  * Frees the memory used to store the selected height map
  */
@@ -869,4 +938,104 @@ void mapgen_generate_from_heightmap(mapgen_settings* settings)
     delete[] dest;
 }
 
+void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
+{
+    openrct2_assert(_heightMapData.width == _heightMapData.height, "Invalid height map size");
+    openrct2_assert(_heightMapData.mono_bitmap != nullptr, "No height map loaded");
+    openrct2_assert(settings->simplex_high != settings->simplex_low, "Low and high setting cannot be the same");
+
+    // Make a copy of the original height map that we can edit
+    uint8_t* dest = new uint8_t[_heightMapData.width * _heightMapData.height];
+    std::memcpy(dest, _heightMapData.mono_bitmap, _heightMapData.width * _heightMapData.width);
+
+    map_init(_heightMapData.width + 2); // + 2 for the black tiles around the map
+
+    if (settings->smooth_height_map)
+    {
+        mapgen_smooth_heightmap(dest, settings->smooth_strength);
+    }
+
+    uint8_t maxValue = 255;
+    uint8_t minValue = 0;
+
+    if (settings->normalize_height)
+    {
+        // Get highest and lowest pixel value
+        maxValue = 0;
+        minValue = 0xff;
+        for (uint32_t y = 0; y < _heightMapData.height; y++)
+        {
+            for (uint32_t x = 0; x < _heightMapData.width; x++)
+            {
+                uint8_t value = dest[x + y * _heightMapData.width];
+                maxValue = std::max(maxValue, value);
+                minValue = std::min(minValue, value);
+            }
+        }
+
+        if (minValue == maxValue)
+        {
+            context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_CANNOT_NORMALIZE);
+            delete[] dest;
+            return;
+        }
+    }
+
+    openrct2_assert(maxValue > minValue, "Input range is invalid");
+    openrct2_assert(settings->simplex_high > settings->simplex_low, "Output range is invalid");
+
+    const uint8_t rangeIn = maxValue - minValue;
+    const uint8_t rangeOut = settings->simplex_high - settings->simplex_low;
+
+    for (uint32_t y = 0; y < _heightMapData.height; y++)
+    {
+        for (uint32_t x = 0; x < _heightMapData.width; x++)
+        {
+            // The x and y axis are flipped in the world, so this uses y for x and x for y.
+            auto* const surfaceElement = map_get_surface_element_at(
+                TileCoordsXY{ static_cast<int32_t>(y + 1), static_cast<int32_t>(x + 1) }.ToCoordsXY());
+            if (surfaceElement == nullptr)
+                continue;
+
+            // Read value from bitmap, and convert its range
+            uint8_t value = dest[x + y * _heightMapData.width];
+            value = (uint8_t)((float)(value - minValue) / rangeIn * rangeOut) + settings->simplex_low;
+            surfaceElement->base_height = value;
+
+            // Floor to even number
+            surfaceElement->base_height /= 2;
+            surfaceElement->base_height *= 2;
+            surfaceElement->clearance_height = surfaceElement->base_height;
+
+            // Set water level
+            if (surfaceElement->base_height < settings->water_level)
+            {
+                surfaceElement->SetWaterHeight(settings->water_level * COORDS_Z_STEP);
+            }
+        }
+    }
+
+    // Smooth map
+    if (settings->smooth)
+    {
+        // Keep smoothing the entire map until no tiles are changed anymore
+        while (true)
+        {
+            uint32_t numTilesChanged = 0;
+            for (uint32_t y = 1; y <= _heightMapData.height; y++)
+            {
+                for (uint32_t x = 1; x <= _heightMapData.width; x++)
+                {
+                    numTilesChanged += tile_smooth(x, y);
+                }
+            }
+
+            if (numTilesChanged == 0)
+                break;
+        }
+    }
+
+    // Clean up
+    delete[] dest;
+}
 #pragma endregion
