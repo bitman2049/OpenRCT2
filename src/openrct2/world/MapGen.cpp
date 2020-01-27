@@ -17,6 +17,7 @@
 #include "../core/String.hpp"
 #include "../localisation/StringIds.h"
 #include "../object/Object.h"
+#include "../object/ObjectManager.h"
 #include "../platform/platform.h"
 #include "../util/Util.h"
 #include "Map.h"
@@ -95,6 +96,7 @@ static void mapgen_simplex(mapgen_settings* settings);
 
 static int32_t _heightSize;
 static uint8_t* _height;
+static Object* _pipesection;
 
 static int32_t get_height(int32_t x, int32_t y)
 {
@@ -986,6 +988,34 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
 
     const uint8_t rangeIn = maxValue - minValue;
     const uint8_t rangeOut = settings->simplex_high - settings->simplex_low;
+    uint32_t pipeid = UINT32_MAX;
+
+    if (!_pipesection)
+    {
+        auto& objectManager = OpenRCT2::GetContext()->GetObjectManager();
+        rct_object_entry entry;
+        entry.flags = 0x00008000 + OBJECT_TYPE_SMALL_SCENERY;
+        std::copy_n(QuarterTile[0], 8, entry.name);
+        entry.checksum = 0;
+        _pipesection = objectManager.LoadObject(&entry);
+    }
+    rct_scenery_entry* sceneryEntry;
+    for (int32_t i = 0; i < object_entry_group_counts[OBJECT_TYPE_SMALL_SCENERY]; i++)
+    {
+        sceneryEntry = get_small_scenery_entry(i);
+        auto entry = object_entry_get_entry(OBJECT_TYPE_SMALL_SCENERY, i);
+
+        if (sceneryEntry == nullptr)
+            continue;
+
+        if (strncmp(QuarterTile[0], entry->name, 8) == 0)
+        {
+            pipeid = i;
+            break;
+        }
+
+        sceneryEntry = nullptr;
+    }
 
     for (uint32_t y = 0; y < _heightMapData.height; y++)
     {
@@ -1014,6 +1044,21 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
             if (surfaceElement->base_height < settings->water_level)
             {
                 surfaceElement->SetWaterHeight(settings->water_level * COORDS_Z_STEP);
+            }
+            else if (sceneryEntry != nullptr)
+            {
+                // If above water, place scenery
+                TileElement* tileElement;
+
+                tileElement = tile_element_insert({ x/2, y/2, value }, 0b1111);
+                assert(tileElement != nullptr);
+                tileElement->clearance_height = value + (sceneryEntry->small_scenery.height >> 3);
+                tileElement->SetType(TILE_ELEMENT_TYPE_SMALL_SCENERY);
+                SmallSceneryElement* sceneryElement = tileElement->AsSmallScenery();
+                sceneryElement->SetEntryIndex(pipeid);
+                sceneryElement->SetSceneryQuadrant(x%2 + 2*(y%2));
+                sceneryElement->SetAge(0);
+                sceneryElement->SetPrimaryColour(COLOUR_YELLOW);
             }
         }
     }
