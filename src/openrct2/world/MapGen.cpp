@@ -82,6 +82,76 @@ static constexpr const char* QuarterTile[] = {
     "PIPE8   ", // Quarter tile 1-tall pipe section
 };
 
+#pragma endregion Random objects
+
+#pragma region Landblocks
+
+enum
+{
+    BLOCK_FLAT,
+    BLOCK_1CORNER,
+    BLOCK_SLOPE,
+    BLOCK_3CORNER,
+    BLOCK_DIAG,
+};
+
+struct QuarterLand
+{
+    Object* block1;
+    uint8_t rot1;
+    uint8_t hi1;
+    Object* block2;
+    uint8_t rot2;
+    uint8_t hi2;
+};
+
+// TERRAIN_GRASS
+static constexpr const char* GrassBlocks[] = {
+    "1KGRSBL0", "1KGRSBL3", "1KGRSBL1", "1KGRSBL2", "1KGRSB4F",
+};
+
+// TERRAIN_SAND
+static constexpr const char* SandBlocks[] = {
+    "MGLBSF1 ", "MGLBSF5 ", "MGLBSF2 ", "MGLBSF3 ", "KNGBBD05",
+};
+
+// TERRAIN_DIRT
+static constexpr const char* DirtBlocks[] = {
+    "KNGBBD01", "KNGBBD04", "KNGBBD02", "KNGBBD03", "KNGBBD05",
+};
+
+// TERRAIN_ROCK
+static constexpr const char* RockBlocks[] = {
+    "XXBQRK21", "XXBQRK29", "XXBQRK22", "XXBQRK23", "KNGBBD05",
+};
+
+// TERRAIN_MARTIAN
+static constexpr const char* MartianBlocks[] = {
+    "1KLBRD1B", "1KLBRD4C", "1KLBRD3B", "1KLBRD2B", "KNGBBRC5",
+};
+
+// TERRAIN_GRASS_CLUMPS
+static constexpr const char* GrassDirtBlocks[] = {
+    "1KLBRD1B", "1KLBRD4C", "1KLBRD3B", "1KLBRD2B", "KNGBBRC5",
+};
+
+// TERRAIN_ICE
+static constexpr const char* IceBlocks[] = {
+    "LVBBICE1", "LVBBICE4", "LVBBICE5", "LVBBICE6", "LVBBICE8",
+};
+
+// TERRAIN_SAND_DARK
+static constexpr const char* DarkSandBlocks[] = {
+    "KNGBBRC1", "KNGBBRC4", "KNGBBRC2", "KNGBBRC3", "KNGBBRC5",
+};
+
+// TERRAIN_SAND_LIGHT
+static constexpr const char* LightSandBlocks[] = {
+    "XXBQRK11", "XXBQRK19", "XXBQRK12", "XXBQRK13", "KNGBBD05",
+};
+
+static Object* get_land_block_object(int texture, int type);
+
 #pragma endregion
 
 // Randomly chosen base terrains. We rarely want a whole map made out of chequerboard or rock.
@@ -767,15 +837,15 @@ bool mapgen_load_heightmap_2(const utf8* path)
     {
         switch (format)
         {
-        case IMAGE_FORMAT::BITMAP:
-            context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_READING_BITMAP);
-            break;
-        case IMAGE_FORMAT::PNG_32:
-            context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_READING_PNG);
-            break;
-        default:
-            log_error("Unable to load height map image: %s", e.what());
-            break;
+            case IMAGE_FORMAT::BITMAP:
+                context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_READING_BITMAP);
+                break;
+            case IMAGE_FORMAT::PNG_32:
+                context_show_error(STR_HEIGHT_MAP_ERROR, STR_ERROR_READING_PNG);
+                break;
+            default:
+                log_error("Unable to load height map image: %s", e.what());
+                break;
         }
         return false;
     }
@@ -950,7 +1020,7 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
     uint8_t* dest = new uint8_t[_heightMapData.width * _heightMapData.height];
     std::memcpy(dest, _heightMapData.mono_bitmap, _heightMapData.width * _heightMapData.width);
 
-    map_init(_heightMapData.width + 2); // + 2 for the black tiles around the map
+    map_init((_heightMapData.width) / 2 + 2); // + 2 for the black tiles around the map
 
     if (settings->smooth_height_map)
     {
@@ -999,7 +1069,7 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
         entry.checksum = 0;
         _pipesection = objectManager.LoadObject(&entry);
     }
-    rct_scenery_entry* sceneryEntry;
+    rct_scenery_entry* sceneryEntry = nullptr;
     for (int32_t i = 0; i < object_entry_group_counts[OBJECT_TYPE_SMALL_SCENERY]; i++)
     {
         sceneryEntry = get_small_scenery_entry(i);
@@ -1023,7 +1093,7 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
         {
             // The x and y axis are flipped in the world, so this uses y for x and x for y.
             auto* const surfaceElement = map_get_surface_element_at(
-                TileCoordsXY{ static_cast<int32_t>((y + 1)/2), static_cast<int32_t>((x + 1))/2 }.ToCoordsXY());
+                TileCoordsXY{ static_cast<int32_t>(y / 2 + 1), static_cast<int32_t>(x / 2 + 1) }.ToCoordsXY());
             if (surfaceElement == nullptr)
                 continue;
 
@@ -1049,14 +1119,16 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
             {
                 // If above water, place scenery
                 TileElement* tileElement;
-
-                tileElement = tile_element_insert({ x/2, y/2, value }, 0b1111);
+                int32_t halfx = (int32_t)(x) / 2 + 1;
+                int32_t halfy = (int32_t)(y) / 2 + 1;
+                tileElement = tile_element_insert({ halfy, halfx, value }, 0b1111);
                 assert(tileElement != nullptr);
                 tileElement->clearance_height = value + (sceneryEntry->small_scenery.height >> 3);
                 tileElement->SetType(TILE_ELEMENT_TYPE_SMALL_SCENERY);
                 SmallSceneryElement* sceneryElement = tileElement->AsSmallScenery();
                 sceneryElement->SetEntryIndex(pipeid);
-                sceneryElement->SetSceneryQuadrant(x%2 + 2*(y%2));
+                int quadrant = (x) % 2 + (y / 2 + 1) % 2;
+                sceneryElement->SetSceneryQuadrant(quadrant);
                 sceneryElement->SetAge(0);
                 sceneryElement->SetPrimaryColour(COLOUR_YELLOW);
             }
@@ -1065,5 +1137,148 @@ void mapgen_generate_from_heightmap_2(mapgen_settings* settings)
 
     // Clean up
     delete[] dest;
+}
+
+static Object* get_land_block_object(int texture, int type)
+{
+    rct_object_entry entry;
+    entry.flags = 0x00008000 + OBJECT_TYPE_SMALL_SCENERY;
+    entry.checksum = 0;
+    switch (texture)
+    {
+        case TERRAIN_GRASS:
+            std::copy_n(GrassBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_SAND:
+            std::copy_n(SandBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_DIRT:
+            std::copy_n(DirtBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_ROCK:
+            std::copy_n(RockBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_MARTIAN:
+            std::copy_n(MartianBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_GRASS_CLUMPS:
+            std::copy_n(GrassDirtBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_ICE:
+            std::copy_n(IceBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_SAND_DARK:
+            std::copy_n(DarkSandBlocks[type], 8, entry.name);
+            break;
+        case TERRAIN_SAND_LIGHT:
+            std::copy_n(LightSandBlocks[type], 8, entry.name);
+            break;
+        default:
+            return nullptr;
+    }
+
+    auto& objectManager = OpenRCT2::GetContext()->GetObjectManager();
+    return objectManager.LoadObject(&entry);
+}
+
+static void place_land_block(uint8_t x, uint8_t y, uint8_t z, uint8_t quadrant, uint8_t rotation, uint8_t slope, int texture)
+{
+    switch (slope&0xF)
+    {
+        // BLOCK_FLAT
+        case 0b1111:
+            //  +---+
+            //  |   |
+            //  +---+
+            z++;
+        case 0b0000:
+            //  o---o
+            //  |   |
+            //  o---o
+            int blockType = BLOCK_FLAT;
+            break;
+
+        // BLOCK_1CORNER
+        case 0b0001:
+            //  +---o
+            //  | / |
+            //  o---o
+            rotation++;
+        case 0b0010:
+            //  o---+
+            //  | \ |
+            //  o---o
+            rotation++;
+        case 0b0100:
+            //  o---o
+            //  | / |
+            //  o---+
+            rotation++;
+        case 0b1000:
+            //  o---o
+            //  | \ |
+            //  +---o
+            int blockType = BLOCK_1CORNER;
+            break;
+
+        // BLOCK_SLOPE
+        case 0b0011:
+            //  +---+
+            //  |---|
+            //  o---o
+            rotation++;
+        case 0b0110:
+            //  o---+
+            //  | | |
+            //  o---+
+            rotation++;
+        case 0b1100:
+            //  o---o
+            //  |---|
+            //  +---+
+            rotation++;
+        case 0b1001:
+            //  +---o
+            //  | | |
+            //  +---o
+            int blockType = BLOCK_SLOPE;
+            break;
+
+        // BLOCK_3CORNER
+        case 0b0111:
+            //  +---+
+            //  | \ |
+            //  o---+
+            rotation++;
+        case 0b1110:
+            //  o---+
+            //  | / |
+            //  +---+
+            rotation++;
+        case 0b1101:
+            //  +---o
+            //  | \ |
+            //  +---+
+            rotation++;
+        case 0b1011:
+            //  +---+
+            //  | / |
+            //  +---o
+            int blockType = BLOCK_3CORNER;
+            break;
+
+        // BLOCK_1CORNER + BLOCK_1CORNER
+        case 0b0101:
+            //  +---o
+            //  | / |
+            //  o---+
+            rotation++;
+        case 0b1010:
+            //  o---+
+            //  | \ |
+            //  +---o
+            
+            break;
+    }
 }
 #pragma endregion
