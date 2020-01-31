@@ -22,6 +22,7 @@
 #include <openrct2/util/Util.h>
 #include <openrct2/windows/Intent.h>
 #include <openrct2/world/MapGen.h>
+#include <openrct2/world/MapGenExtensions.h>
 #include <openrct2/world/Surface.h>
 
 using namespace OpenRCT2;
