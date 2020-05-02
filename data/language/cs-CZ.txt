@@ -2793,7 +2793,6 @@ STR_5410    :Upravit
 STR_5411    :Znovu načíst
 STR_5412    :Přeskočit na
 STR_5413    :Načíst
-STR_5414    :Načíst{MOVE_X}{87}Six Flags Magic Mountain.SC6
 STR_5415    :Načíst{MOVE_X}{87}{STRING}
 STR_5416    :Načíst{MOVE_X}{87}Nebyla vybrána uložená hra
 STR_5417    :Umístění
@@ -3674,6 +3673,22 @@ STR_6331    :Přivolat kachny
 STR_6332    :Zmizet kachny
 STR_6333    :Zvýšit koeficient škálování
 STR_6334    :Snížit koeficient škálování
+STR_6335    :Průzkumník dlaždic: Vložit neplatný prvek
+STR_6336    :Průzkumník dlaždic: Kopírovat prvek
+STR_6337    :Průzkumník dlaždic: Vložit prvek
+STR_6338    :Průzkumník dlaždic: Smazat prvek
+STR_6339    :Průzkumník dlaždic: Posunout prvek nahoru
+STR_6340    :Průzkumník dlaždic: Posunout prvek dolů
+STR_6341    :Průzkumník dlaždic: Zvýšit X souřadnici
+STR_6342    :Průzkumník dlaždic: Snížit X souřadnici
+STR_6343    :Průzkumník dlaždic: Zvýšit Y souřadnici
+STR_6344    :Průzkumník dlaždic: Snížit Y souřadnici
+STR_6345    :Průzkumník dlaždic: Zvýšit výšku prvku
+STR_6346    :Průzkumník dlaždic: Snížit výšku prvku
+STR_6347    :Doplňky cest nelze kombinovat s přejezdem!
+STR_6348    :Napřed je nutné odstranit přejezd!
+STR_6349    :Náhodná úvodní herní sekvence
+STR_6360    :{SMALLFONT}{BLACK}{COMMA32}
 
 ###############################################################################
 ## RCT2 Scenarios

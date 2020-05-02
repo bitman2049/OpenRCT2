@@ -2479,11 +2479,6 @@ STR_3390    :Zu viele Objekte ausgewählt
 STR_3437    :{SMALLFONT}{BLACK}Bäume, Mauern und kleinere Szenerieobjekte aus der Landschaft entfernen
 STR_3438    :Es konnten nicht alle Szenerieobjekte entfernt werden...
 STR_3439    :Szenerie entf.
-STR_3440    :Seite 1
-STR_3441    :Seite 2
-STR_3442    :Seite 3
-STR_3443    :Seite 4
-STR_3444    :Seite 5
 STR_3445    :Patrouillenbereich festlegen
 STR_3446    :Patrouillenbereich verwerfen
 # New strings, cleaner
@@ -2777,7 +2772,6 @@ STR_5410    :Bearbeiten
 STR_5411    :Neu laden
 STR_5412    :Springen zu
 STR_5413    :Laden
-STR_5414    :Laden{MOVE_X}{87}Six Flags Magic Mountain.SC6
 STR_5415    :Laden{MOVE_X}{87}{STRING}
 STR_5416    :Laden{MOVE_X}{87}Kein Spielstand ausgewählt
 STR_5417    :Position
@@ -3669,6 +3663,18 @@ STR_6345    :Kachelinspektor: Elementhöhe erhöhen
 STR_6346    :Kachelinspektor: Elementhöhe verringern
 STR_6347    :Wegextras können nicht auf Bahnübergängen platziert werden!
 STR_6348    :Bahnübergang muss zuerst entfernt werden!
+STR_6349    :Zufällige Titelsequenz
+STR_6350    :Streuen
+STR_6351    :Szeneriestreuwerkzeug
+STR_6352    :Dichte
+STR_6353    :{SMALLFONT}{BLACK}Niedgrige Dichte
+STR_6354    :{SMALLFONT}{BLACK}Mittlere Dichte
+STR_6355    :{SMALLFONT}{BLACK}Hohe Dichte
+STR_6356    :{SMALLFONT}{BLACK}Erzeugt Enten, falls der Park Wasser enthält
+STR_6357    :{SMALLFONT}{BLACK}Entfernt alle Enten aus der Karte
+STR_6358    :Seite {UINT16}
+STR_6359    :{POP16}{POP16}Seite {UINT16}
+STR_6360    :{SMALLFONT}{BLACK}{COMMA32}
 
 #############
 # Scenarios #

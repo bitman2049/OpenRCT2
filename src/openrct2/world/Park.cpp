@@ -102,7 +102,7 @@ void park_set_open(bool open)
  *
  *  rct2: 0x00664D05
  */
-void update_park_fences(const CoordsXY coords)
+void update_park_fences(const CoordsXY& coords)
 {
     if (map_is_edge(coords))
         return;
@@ -140,22 +140,22 @@ void update_park_fences(const CoordsXY coords)
             // As map_is_location_in_park sets the error text
             // will require to back it up.
             rct_string_id previous_error = gGameCommandErrorText;
-            if (map_is_location_in_park({ coords.x - 32, coords.y }))
+            if (map_is_location_in_park({ coords.x - COORDS_XY_STEP, coords.y }))
             {
                 newFences |= 0x8;
             }
 
-            if (map_is_location_in_park({ coords.x, coords.y - 32 }))
+            if (map_is_location_in_park({ coords.x, coords.y - COORDS_XY_STEP }))
             {
                 newFences |= 0x4;
             }
 
-            if (map_is_location_in_park({ coords.x + 32, coords.y }))
+            if (map_is_location_in_park({ coords.x + COORDS_XY_STEP, coords.y }))
             {
                 newFences |= 0x2;
             }
 
-            if (map_is_location_in_park({ coords.x, coords.y + 32 }))
+            if (map_is_location_in_park({ coords.x, coords.y + COORDS_XY_STEP }))
             {
                 newFences |= 0x1;
             }
@@ -173,13 +173,13 @@ void update_park_fences(const CoordsXY coords)
     }
 }
 
-void update_park_fences_around_tile(const CoordsXY coords)
+void update_park_fences_around_tile(const CoordsXY& coords)
 {
     update_park_fences(coords);
-    update_park_fences({ coords.x + 32, coords.y });
-    update_park_fences({ coords.x - 32, coords.y });
-    update_park_fences({ coords.x, coords.y + 32 });
-    update_park_fences({ coords.x, coords.y - 32 });
+    update_park_fences({ coords.x + COORDS_XY_STEP, coords.y });
+    update_park_fences({ coords.x - COORDS_XY_STEP, coords.y });
+    update_park_fences({ coords.x, coords.y + COORDS_XY_STEP });
+    update_park_fences({ coords.x, coords.y - COORDS_XY_STEP });
 }
 
 void set_forced_park_rating(int32_t rating)
@@ -268,7 +268,7 @@ void Park::Initialise()
     gParkRating = 0;
     _guestGenerationProbability = 0;
     gTotalRideValueForMoney = 0;
-    gResearchLastItem.rawValue = RESEARCHED_ITEMS_SEPARATOR;
+    gResearchLastItem = std::nullopt;
     gMarketingCampaigns.clear();
 
     research_reset_items();
@@ -468,7 +468,7 @@ int32_t Park::CalculateParkRating() const
 
     // Litter
     {
-        rct_litter* litter;
+        Litter* litter;
         int32_t litterCount = 0;
         for (uint16_t spriteIndex = gSpriteListHead[SPRITE_LIST_LITTER]; spriteIndex != SPRITE_INDEX_NULL;
              spriteIndex = litter->next)

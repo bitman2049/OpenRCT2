@@ -2787,7 +2787,6 @@ STR_5410    :编辑
 STR_5411    :重载
 STR_5412    :转跳至
 STR_5413    :加载
-STR_5414    :加载{MOVE_X}{87}大型六旗游乐园.SC6
 STR_5415    :加载{MOVE_X}{87}{STRING}
 STR_5416    :加载{MOVE_X}{87}无存档被选中
 STR_5417    :定位
@@ -3643,7 +3642,7 @@ STR_6303    :下载文件 ({COMMA16} / {COMMA16}): [{STRING}]
 STR_6304    :打开景物选择器
 STR_6305    :多线程
 STR_6306    :{SMALLFONT}{BLACK}使用多个线程进行渲染的实验选项可能会导致游戏不稳定
-
+STR_6360    :{SMALLFONT}{BLACK}{COMMA32}
 
 #############
 # Scenarios #
